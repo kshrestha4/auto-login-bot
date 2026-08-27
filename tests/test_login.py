@@ -40,6 +40,16 @@ def test_verify_login_rejects_unexpected_url():
     assert verify_login(driver, CONFIG) is False
 
 
+def test_verify_login_uses_configured_element_selector(monkeypatch):
+    config = CONFIG.__class__(**{**CONFIG.__dict__, "success_check_type": "element", "success_selector": ("id", "account")})
+    driver = MagicMock(current_url="https://example.test/login")
+    driver.find_elements.return_value = []
+    monkeypatch.setattr("src.login._wait", lambda *_args: MagicMock(until=lambda condition: condition(driver) or (_ for _ in ()).throw(TimeoutException())))
+
+    assert verify_login(driver, config) is False
+    driver.find_elements.assert_called_once_with("id", "account")
+
+
 def test_login_returns_success_for_completed_workflow(monkeypatch):
     driver = MagicMock(current_url="https://example.test/login")
     username = MagicMock()
