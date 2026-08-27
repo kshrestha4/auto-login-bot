@@ -124,7 +124,7 @@ The default verification checks whether the current URL contains `/dashboard`. C
 - `src/browser.py` creates Chrome with Selenium Manager and closes it safely.
 - `src/login.py` performs the workflow and returns a small `LoginResult` instead of exposing browser details to `main.py`.
 - `src/logger.py` configures readable application logs.
-- `tests/` contains fast unit tests using mocks; they do not prove that a particular live site works.
+- `tests/` contains fast unit tests using mocks; they do not prove that a particular live site works. Browser option tests verify lifecycle behavior without launching Chrome.
 
 Functions keep each job small and modules group related functions. Imports connect those modules without placing everything in one large script.
 
