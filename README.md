@@ -103,7 +103,7 @@ A selector is an instruction for locating an element in the page's DOM (the brow
 
 ## Safe dry run
 
-Set `DRY_RUN=true` to validate the configuration without starting Chrome or submitting a login. This is useful when learning selectors or checking a new `.env` file. Set it back to `false` for an actual authorized browser run.
+Set `DRY_RUN=true` to validate the configuration without starting Chrome or submitting a login. This is useful when learning selectors or checking a new `.env` file. Set it back to `false` for an actual authorized browser run. Set `HEADLESS=true` only when you want Chrome to run without a visible window, such as in CI; visible Chrome is the default for easier learning and debugging.
 
 ## Running
 

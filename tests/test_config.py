@@ -108,6 +108,21 @@ def test_invalid_dry_run_has_actionable_error(monkeypatch):
         load_config(env_path="/path/that/does/not/exist")
 
 
+def test_headless_is_parsed(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("HEADLESS", "true")
+
+    assert load_config(env_path="/path/that/does/not/exist").headless is True
+
+
+def test_invalid_headless_has_actionable_error(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("HEADLESS", "sometimes")
+
+    with pytest.raises(ConfigurationError, match="HEADLESS"):
+        load_config(env_path="/path/that/does/not/exist")
+
+
 def test_invalid_timeout_has_actionable_error(monkeypatch):
     set_values(monkeypatch)
     monkeypatch.setenv("WAIT_TIMEOUT_SECONDS", "fast")

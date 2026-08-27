@@ -21,7 +21,7 @@ def main() -> int:
             logger.info("Dry run enabled; configuration is valid and Chrome will not start")
             return 0
         logger.info("Starting Chrome")
-        driver = create_driver()
+        driver = create_driver(headless=config.headless)
         result = login(driver, config)
         if result.verified:
             logger.info(result.message)

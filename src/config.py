@@ -42,6 +42,7 @@ class Config:
     success_selector: Tuple[str, str] | None = None
     wait_timeout: int = 15
     dry_run: bool = False
+    headless: bool = False
 
 
 def _required(name: str) -> str:
@@ -105,6 +106,10 @@ def load_config(env_path: str | Path | None = None) -> Config:
     if success_check_type in {"element", "either"}:
         success_selector = _selector("SUCCESS")
 
+    headless_value = os.getenv("HEADLESS", "false").strip().lower()
+    if headless_value not in {"true", "false"}:
+        raise ConfigurationError("HEADLESS must be either true or false.")
+
     return Config(
         login_url=validate_login_url(_required("LOGIN_URL")),
         username=_required("LOGIN_USERNAME"),
@@ -117,4 +122,5 @@ def load_config(env_path: str | Path | None = None) -> Config:
         success_selector=success_selector,
         wait_timeout=wait_timeout,
         dry_run=dry_run_value == "true",
+        headless=headless_value == "true",
     )
