@@ -85,7 +85,7 @@ Never paste real credentials into `config.py`, `main.py`, tests, logs, or chat m
 
 ## Finding selectors
 
-The example selectors are not universal. On an authorized website:
+The example selectors are not universal. The configuration module converts each readable selector type and value into Selenium's `(By, value)` format. On an authorized website:
 
 1. Right-click the username field and choose **Inspect**.
 2. Look for a stable `id` or `name`, such as `name="username"`.

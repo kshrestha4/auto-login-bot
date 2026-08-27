@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.config import ConfigurationError, load_config
+from src.config import ConfigurationError, load_config, parse_selector
 
 
 VALUES = {
@@ -22,6 +22,19 @@ VALUES = {
 def set_values(monkeypatch, values=VALUES):
     for key, value in values.items():
         monkeypatch.setenv(key, value)
+
+
+@pytest.mark.parametrize(
+    ("selector_type", "expected"),
+    [("id", "id"), ("name", "name"), ("css", "css selector"), ("xpath", "xpath")],
+)
+def test_parse_selector_supports_common_strategies(selector_type, expected):
+    assert parse_selector(selector_type, "target") == (expected, "target")
+
+
+def test_parse_selector_rejects_empty_value():
+    with pytest.raises(ConfigurationError, match="cannot be empty"):
+        parse_selector("id", " ", "USERNAME")
 
 
 def test_load_config_returns_validated_config(monkeypatch):

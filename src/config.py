@@ -52,16 +52,27 @@ def _required(name: str) -> str:
     return value
 
 
-def _selector(prefix: str) -> Tuple[str, str]:
-    selector_type = _required(f"{prefix}_SELECTOR_TYPE").lower()
-    selector_value = _required(f"{prefix}_SELECTOR_VALUE")
+def parse_selector(selector_type: str, selector_value: str, name: str = "selector") -> Tuple[str, str]:
+    """Convert a readable selector strategy and value into Selenium's tuple format."""
+    normalized_type = selector_type.strip().lower()
+    value = selector_value.strip()
+    if not value:
+        raise ConfigurationError(f"{name} selector value cannot be empty.")
     try:
-        return _SELECTOR_TYPES[selector_type], selector_value
+        return _SELECTOR_TYPES[normalized_type], value
     except KeyError as exc:
         supported = ", ".join(sorted(_SELECTOR_TYPES))
         raise ConfigurationError(
-            f"Unsupported {prefix} selector type {selector_type!r}. Use: {supported}."
+            f"Unsupported {name} selector type {selector_type!r}. Use: {supported}."
         ) from exc
+
+
+def _selector(prefix: str) -> Tuple[str, str]:
+    return parse_selector(
+        _required(f"{prefix}_SELECTOR_TYPE"),
+        _required(f"{prefix}_SELECTOR_VALUE"),
+        prefix,
+    )
 
 
 def load_config(env_path: str | Path | None = None) -> Config:
