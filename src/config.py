@@ -37,6 +37,8 @@ class Config:
     password_selector: Tuple[str, str]
     login_button_selector: Tuple[str, str]
     success_url_contains: str
+    success_check_type: str = "url"
+    success_selector: Tuple[str, str] | None = None
     wait_timeout: int = 15
     dry_run: bool = False
 
@@ -75,6 +77,14 @@ def load_config(env_path: str | Path | None = None) -> Config:
     if dry_run_value not in {"true", "false"}:
         raise ConfigurationError("DRY_RUN must be either true or false.")
 
+    success_check_type = os.getenv("SUCCESS_CHECK_TYPE", "url").strip().lower()
+    if success_check_type not in {"url", "element", "either"}:
+        raise ConfigurationError("SUCCESS_CHECK_TYPE must be url, element, or either.")
+    success_url_contains = _required("SUCCESS_URL_CONTAINS")
+    success_selector = None
+    if success_check_type in {"element", "either"}:
+        success_selector = _selector("SUCCESS")
+
     return Config(
         login_url=_required("LOGIN_URL"),
         username=_required("LOGIN_USERNAME"),
@@ -82,7 +92,9 @@ def load_config(env_path: str | Path | None = None) -> Config:
         username_selector=_selector("USERNAME"),
         password_selector=_selector("PASSWORD"),
         login_button_selector=_selector("LOGIN_BUTTON"),
-        success_url_contains=_required("SUCCESS_URL_CONTAINS"),
+        success_url_contains=success_url_contains,
+        success_check_type=success_check_type,
+        success_selector=success_selector,
         wait_timeout=wait_timeout,
         dry_run=dry_run_value == "true",
     )

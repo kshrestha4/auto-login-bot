@@ -115,7 +115,7 @@ python main.py
 
 Expected progress includes messages such as `Opening login page`, `Username field located`, `Submitting login`, and either `Login successful!` or `Login could not be verified.` The password is never printed.
 
-The default verification checks whether the current URL contains `/dashboard`. Every site is different: change `SUCCESS_URL_CONTAINS` to the fragment used by your authorized site. A site that stays on the same URL may require a future element-based verification strategy.
+The default verification checks whether the current URL contains `/dashboard`. Change `SUCCESS_URL_CONTAINS` to the fragment used by your authorized site. If the site stays on the same URL, set `SUCCESS_CHECK_TYPE=element` and configure `SUCCESS_SELECTOR_TYPE` and `SUCCESS_SELECTOR_VALUE`. `either` accepts whichever check succeeds first.
 
 ## How the code connects
 

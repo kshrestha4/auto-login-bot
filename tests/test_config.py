@@ -51,6 +51,26 @@ def test_invalid_selector_type_has_actionable_error(monkeypatch):
         load_config(env_path="/path/that/does/not/exist")
 
 
+def test_element_success_check_loads_selector(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("SUCCESS_CHECK_TYPE", "element")
+    monkeypatch.setenv("SUCCESS_SELECTOR_TYPE", "id")
+    monkeypatch.setenv("SUCCESS_SELECTOR_VALUE", "account")
+
+    config = load_config(env_path="/path/that/does/not/exist")
+
+    assert config.success_check_type == "element"
+    assert config.success_selector == ("id", "account")
+
+
+def test_invalid_success_check_type_has_actionable_error(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("SUCCESS_CHECK_TYPE", "unknown")
+
+    with pytest.raises(ConfigurationError, match="SUCCESS_CHECK_TYPE"):
+        load_config(env_path="/path/that/does/not/exist")
+
+
 def test_dry_run_is_parsed(monkeypatch):
     set_values(monkeypatch)
     monkeypatch.setenv("DRY_RUN", "true")

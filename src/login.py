@@ -33,14 +33,25 @@ def _wait(driver: WebDriver, timeout: int) -> WebDriverWait:
 
 
 def verify_login(driver: WebDriver, config: Config) -> bool:
-    """Verify success by waiting for and checking the configured URL fragment."""
+    """Verify success using the configured URL and/or page element check."""
+    def url_matches(current_driver: WebDriver) -> bool:
+        return config.success_url_contains in current_driver.current_url
+
+    def element_exists(current_driver: WebDriver) -> bool:
+        if config.success_selector is None:
+            return False
+        return bool(current_driver.find_elements(*config.success_selector))
+
     try:
-        _wait(driver, config.wait_timeout).until(
-            lambda current_driver: config.success_url_contains
-            in current_driver.current_url
-        )
+        if config.success_check_type == "url":
+            condition = url_matches
+        elif config.success_check_type == "element":
+            condition = element_exists
+        else:
+            condition = lambda current_driver: url_matches(current_driver) or element_exists(current_driver)
+        _wait(driver, config.wait_timeout).until(condition)
         return True
-    except TimeoutException:
+    except (TimeoutException, NoSuchElementException):
         return False
 
 

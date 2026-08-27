@@ -26,6 +26,14 @@ def test_verify_login_accepts_expected_url():
     assert verify_login(driver, CONFIG) is True
 
 
+def test_verify_login_accepts_success_element(monkeypatch):
+    config = CONFIG.__class__(**{**CONFIG.__dict__, "success_check_type": "element", "success_selector": ("id", "account")})
+    driver = MagicMock(current_url="https://example.test/login")
+    driver.find_elements.return_value = [MagicMock()]
+
+    assert verify_login(driver, config) is True
+
+
 def test_verify_login_rejects_unexpected_url():
     driver = MagicMock(current_url="https://example.test/login?error=1")
 
