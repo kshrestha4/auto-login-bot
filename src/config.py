@@ -38,6 +38,7 @@ class Config:
     login_button_selector: Tuple[str, str]
     success_url_contains: str
     wait_timeout: int = 15
+    dry_run: bool = False
 
 
 def _required(name: str) -> str:
@@ -70,6 +71,9 @@ def load_config(env_path: str | Path | None = None) -> Config:
         raise ConfigurationError("WAIT_TIMEOUT_SECONDS must be a whole number.") from exc
     if wait_timeout <= 0:
         raise ConfigurationError("WAIT_TIMEOUT_SECONDS must be greater than zero.")
+    dry_run_value = os.getenv("DRY_RUN", "false").strip().lower()
+    if dry_run_value not in {"true", "false"}:
+        raise ConfigurationError("DRY_RUN must be either true or false.")
 
     return Config(
         login_url=_required("LOGIN_URL"),
@@ -80,4 +84,5 @@ def load_config(env_path: str | Path | None = None) -> Config:
         login_button_selector=_selector("LOGIN_BUTTON"),
         success_url_contains=_required("SUCCESS_URL_CONTAINS"),
         wait_timeout=wait_timeout,
+        dry_run=dry_run_value == "true",
     )

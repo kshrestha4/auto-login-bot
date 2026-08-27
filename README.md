@@ -78,6 +78,7 @@ LOGIN_BUTTON_SELECTOR_TYPE=css selector
 LOGIN_BUTTON_SELECTOR_VALUE=button[type='submit']
 SUCCESS_URL_CONTAINS=/dashboard
 WAIT_TIMEOUT_SECONDS=15
+DRY_RUN=false
 ```
 
 Never paste real credentials into `config.py`, `main.py`, tests, logs, or chat messages. `.env` is ignored by Git and must never be committed to GitHub. `.env.example` contains placeholders only and is safe to commit.
@@ -99,6 +100,10 @@ Examples:
 - `xpath` can express relationships, but CSS selectors are usually shorter and easier to maintain.
 
 A selector is an instruction for locating an element in the page's DOM (the browser's tree representation of HTML). Prefer stable, specific attributes over fragile generated class names. If several elements match, make the selector more specific.
+
+## Safe dry run
+
+Set `DRY_RUN=true` to validate the configuration without starting Chrome or submitting a login. This is useful when learning selectors or checking a new `.env` file. Set it back to `false` for an actual authorized browser run.
 
 ## Running
 

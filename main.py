@@ -17,6 +17,9 @@ def main() -> int:
     try:
         logger.info("Loading configuration")
         config = load_config()
+        if config.dry_run:
+            logger.info("Dry run enabled; configuration is valid and Chrome will not start")
+            return 0
         logger.info("Starting Chrome")
         driver = create_driver()
         result = login(driver, config)

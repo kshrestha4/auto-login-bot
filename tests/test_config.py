@@ -51,6 +51,21 @@ def test_invalid_selector_type_has_actionable_error(monkeypatch):
         load_config(env_path="/path/that/does/not/exist")
 
 
+def test_dry_run_is_parsed(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("DRY_RUN", "true")
+
+    assert load_config(env_path="/path/that/does/not/exist").dry_run is True
+
+
+def test_invalid_dry_run_has_actionable_error(monkeypatch):
+    set_values(monkeypatch)
+    monkeypatch.setenv("DRY_RUN", "sometimes")
+
+    with pytest.raises(ConfigurationError, match="DRY_RUN"):
+        load_config(env_path="/path/that/does/not/exist")
+
+
 def test_invalid_timeout_has_actionable_error(monkeypatch):
     set_values(monkeypatch)
     monkeypatch.setenv("WAIT_TIMEOUT_SECONDS", "fast")
