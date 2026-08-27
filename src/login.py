@@ -21,11 +21,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
 class LoginResult:
-    """Outcome of a login attempt."""
+    """Outcome of a login attempt, including the stage that produced it."""
 
     submitted: bool
     verified: bool
     message: str
+    stage: str = "unknown"
 
 
 def _wait(driver: WebDriver, timeout: int) -> WebDriverWait:
@@ -63,7 +64,7 @@ def login(driver: WebDriver, config: Config) -> LoginResult:
             driver.get(config.login_url)
         except WebDriverException as exc:
             logger.debug("Navigation failure details: %s", exc, exc_info=True)
-            return LoginResult(False, False, "Could not open the configured login URL.")
+            return LoginResult(False, False, "Could not open the configured login URL.", "navigation")
 
         username = _wait(driver, config.wait_timeout).until(
             expected.visibility_of_element_located(config.username_selector)
@@ -88,10 +89,10 @@ def login(driver: WebDriver, config: Config) -> LoginResult:
 
         verified = verify_login(driver, config)
         if verified:
-            return LoginResult(True, True, "Login successful!")
-        return LoginResult(True, False, "Login could not be verified.")
+            return LoginResult(True, True, "Login successful!", "verification")
+        return LoginResult(True, False, "Login could not be verified.", "verification")
     except TimeoutException:
-        return LoginResult(False, False, "Timed out while waiting for a login element or result.")
+        return LoginResult(False, False, "Timed out while waiting for a login element or result.", "element")
     except (NoSuchElementException, WebDriverException) as exc:
         logger.debug("Selenium failure details: %s", exc, exc_info=True)
-        return LoginResult(False, False, "The browser could not complete the login workflow.")
+        return LoginResult(False, False, "The browser could not complete the login workflow.", "selenium")

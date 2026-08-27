@@ -58,7 +58,7 @@ def test_login_returns_success_for_completed_workflow(monkeypatch):
 
     result = login(driver, CONFIG)
 
-    assert result == LoginResult(True, True, "Login successful!")
+    assert result == LoginResult(True, True, "Login successful!", "verification")
     username.send_keys.assert_called_once_with("alice")
     password.send_keys.assert_called_once_with("secret")
     button.click.assert_called_once()
@@ -70,7 +70,7 @@ def test_login_reports_navigation_failure():
 
     result = login(driver, CONFIG)
 
-    assert result == LoginResult(False, False, "Could not open the configured login URL.")
+    assert result == LoginResult(False, False, "Could not open the configured login URL.", "navigation")
 
 
 def test_login_converts_timeout_to_clear_result(monkeypatch):
@@ -82,4 +82,5 @@ def test_login_converts_timeout_to_clear_result(monkeypatch):
     result = login(driver, CONFIG)
 
     assert result.submitted is False
+    assert result.stage == "element"
     assert "Timed out" in result.message
