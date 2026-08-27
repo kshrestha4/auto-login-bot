@@ -59,7 +59,11 @@ def login(driver: WebDriver, config: Config) -> LoginResult:
     """Navigate, fill, submit, and verify a login form."""
     try:
         logger.info("Opening login page")
-        driver.get(config.login_url)
+        try:
+            driver.get(config.login_url)
+        except WebDriverException as exc:
+            logger.debug("Navigation failure details: %s", exc, exc_info=True)
+            return LoginResult(False, False, "Could not open the configured login URL.")
 
         username = _wait(driver, config.wait_timeout).until(
             expected.visibility_of_element_located(config.username_selector)

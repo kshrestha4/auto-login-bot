@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, WebDriverException
 
 from src.config import Config
 from src.login import LoginResult, login, verify_login
@@ -62,6 +62,15 @@ def test_login_returns_success_for_completed_workflow(monkeypatch):
     username.send_keys.assert_called_once_with("alice")
     password.send_keys.assert_called_once_with("secret")
     button.click.assert_called_once()
+
+
+def test_login_reports_navigation_failure():
+    driver = MagicMock()
+    driver.get.side_effect = WebDriverException("network unavailable")
+
+    result = login(driver, CONFIG)
+
+    assert result == LoginResult(False, False, "Could not open the configured login URL.")
 
 
 def test_login_converts_timeout_to_clear_result(monkeypatch):
