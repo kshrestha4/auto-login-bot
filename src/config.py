@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from urllib.parse import urlparse
 from pathlib import Path
 from typing import Tuple
 
@@ -75,6 +76,14 @@ def _selector(prefix: str) -> Tuple[str, str]:
     )
 
 
+def validate_login_url(value: str) -> str:
+    """Require an absolute HTTP(S) URL before handing it to the browser."""
+    parsed = urlparse(value.strip())
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ConfigurationError("LOGIN_URL must be an absolute http:// or https:// URL.")
+    return value.strip()
+
+
 def load_config(env_path: str | Path | None = None) -> Config:
     """Load .env values and return validated configuration."""
     load_dotenv(dotenv_path=env_path)
@@ -97,7 +106,7 @@ def load_config(env_path: str | Path | None = None) -> Config:
         success_selector = _selector("SUCCESS")
 
     return Config(
-        login_url=_required("LOGIN_URL"),
+        login_url=validate_login_url(_required("LOGIN_URL")),
         username=_required("LOGIN_USERNAME"),
         password=_required("LOGIN_PASSWORD"),
         username_selector=_selector("USERNAME"),

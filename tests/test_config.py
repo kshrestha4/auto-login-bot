@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.config import ConfigurationError, load_config, parse_selector
+from src.config import ConfigurationError, load_config, parse_selector, validate_login_url
 
 
 VALUES = {
@@ -22,6 +22,15 @@ VALUES = {
 def set_values(monkeypatch, values=VALUES):
     for key, value in values.items():
         monkeypatch.setenv(key, value)
+
+
+def test_validate_login_url_accepts_http_urls():
+    assert validate_login_url(" https://example.test/login ") == "https://example.test/login"
+
+
+def test_validate_login_url_rejects_non_http_urls():
+    with pytest.raises(ConfigurationError, match="absolute http"):
+        validate_login_url("javascript:alert(1)")
 
 
 @pytest.mark.parametrize(
